@@ -1,6 +1,6 @@
 """
 Несекретные параметры проекта.
-Секреты — в .env, временные заглушки — в temp_settings.py.
+Секреты — в .env (DB_PASSWORD, JWT_SECRET, MOBIZON_API_KEY, ...).
 """
 import os
 from dotenv import load_dotenv

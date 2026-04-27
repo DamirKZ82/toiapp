@@ -162,7 +162,14 @@ async def request_otp(body: RequestOtpBody):
     """)
 
     # Создаём новый код
-    code = config['otp']['mock_code']   # на MVP всегда '0000'
+    # dev — фиксированный '0000' (удобно тестировать)
+    # prod — случайные 4 цифры
+    if config['env'] == 'dev':
+        code = config['otp']['mock_code']   # '0000'
+    else:
+        import secrets
+        code = f'{secrets.randbelow(10000):04d}'
+
     expires_at = add_minutes(now, config['otp']['ttl_minutes'])
     await query_db(f"""
         INSERT INTO otp_codes (phone, code, created_at, expires_at, used)

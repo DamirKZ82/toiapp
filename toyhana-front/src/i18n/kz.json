@@ -26,7 +26,7 @@
     "reason_generic": "Жалғастыру үшін кіріңіз."
   },
   "auth": {
-    "phone_title": "Toyhana-ға кіру",
+    "phone_title": "ToyHUB-ға кіру",
     "phone_subtitle": "Телефон нөмірін енгізіңіз — код жібереміз",
     "phone_placeholder": "+7 (___) ___-__-__",
     "phone_button": "Код алу",

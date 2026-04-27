@@ -1,0 +1,132 @@
+# =============================================================================
+# Toyhana — production stack
+#
+# Сервисы:
+#   - postgres: PostgreSQL 16 (БД)
+#   - backend:  FastAPI на uvicorn (внутренний порт 1500)
+#   - nginx:    reverse-proxy + раздача /uploads + (опционально) HTTPS
+#
+# Запуск:
+#   1. Скопировать .env.example -> .env, заполнить секреты
+#   2. docker compose up -d --build
+#
+# Логи: docker compose logs -f backend
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: toyhana-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      # Локаль для корректной сортировки кириллицы
+      LANG: C.UTF-8
+      LC_COLLATE: C.UTF-8
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Бэкапы делает host-овый cron через `docker exec`. См. README-deploy.md
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    # Порт наружу не пробрасываем — подключаемся через docker network.
+    # Если нужен прямой доступ для дампа/админки — открыть только для localhost:
+    # ports:
+    #   - "127.0.0.1:5432:5432"
+    networks:
+      - toyhana-net
+
+  # ---------------------------------------------------------------------------
+  # FastAPI backend
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./toyhana-back
+      dockerfile: Dockerfile
+    image: toyhana-backend:latest
+    container_name: toyhana-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      TOYHANA_ENV: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      UPLOADS_ROOT: /data/uploads
+      # Опционально (можно не задавать — функция деградирует)
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      MOBIZON_API_KEY: ${MOBIZON_API_KEY:-}
+      MOBIZON_SENDER: ${MOBIZON_SENDER:-}
+      TWOGIS_API_KEY: ${TWOGIS_API_KEY:-}
+    volumes:
+      # Загруженные фото сохраняются между перезапусками контейнера
+      - uploads:/data/uploads
+    networks:
+      - toyhana-net
+    # Внутренний порт 1500 — наружу через nginx, не маппим напрямую.
+    expose:
+      - "1500"
+
+  # ---------------------------------------------------------------------------
+  # Nginx — reverse proxy + статика /uploads
+  # ---------------------------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: toyhana-nginx
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Том с фото — те же файлы что бэкенд пишет; nginx раздаёт их быстрее
+      - uploads:/data/uploads:ro
+      # Сертификаты Let's Encrypt — будет настроен через certbot отдельно
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    networks:
+      - toyhana-net
+
+  # ---------------------------------------------------------------------------
+  # Certbot — Let's Encrypt SSL (запускается вручную, см. README-deploy.md)
+  # ---------------------------------------------------------------------------
+  certbot:
+    image: certbot/certbot:latest
+    container_name: toyhana-certbot
+    profiles:
+      - certbot   # запускается только командой `docker compose --profile certbot run certbot ...`
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: ""
+    command: --version
+
+
+networks:
+  toyhana-net:
+    driver: bridge
+
+
+volumes:
+  pgdata:
+    driver: local
+  uploads:
+    driver: local

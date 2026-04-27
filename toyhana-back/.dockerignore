@@ -1,0 +1,28 @@
+# Не копировать в образ — уменьшаем размер контекста и не тащим секреты
+.git
+.gitignore
+.venv
+venv
+env
+.env
+.env.*
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.idea/
+.vscode/
+*.log
+README.md
+README-*.md
+uploads/
+.DS_Store
+Thumbs.db
+
+# CI / docs
+.github/
+docs/
+
+# Тестовые данные
+tests/
+test_*.py

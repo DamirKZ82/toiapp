@@ -1,40 +1,6 @@
-﻿# Python (toyhana-back)
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-.pytest_cache/
 
-# Node / Expo (toyhana-front)
-node_modules/
-.expo/
-.expo-shared/
-dist/
-*.tsbuildinfo
-
-# Секреты
-.env
-.env.local
-.env.*.local
-*.pem
-*.key
-
-# Загрузки
-uploads/
-toyhana-back/uploads/
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Логи
-*.log
-
-# Сборки мобильного
-*.apk
-*.aab
-*.ipa
+# Firebase config (содержит API-ключи)
+google-services.json
+GoogleService-Info.plist
+toyhana-front/google-services.json
+toyhana-front/GoogleService-Info.plist
