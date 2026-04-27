@@ -1,0 +1,50 @@
+{
+  "name": "toyhana-front",
+  "version": "0.1.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "expo": "^54.0.0",
+    "expo-asset": "~12.0.0",
+    "expo-constants": "~18.0.0",
+    "expo-device": "~8.0.0",
+    "expo-image-picker": "~17.0.0",
+    "expo-linking": "~8.0.0",
+    "expo-localization": "~17.0.0",
+    "expo-location": "~19.0.0",
+    "expo-notifications": "~0.32.0",
+    "expo-secure-store": "~15.0.0",
+    "expo-status-bar": "~3.0.0",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-calendars": "^1.1312.0",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-paper": "^5.14.0",
+    "react-native-reanimated": "~4.1.0",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-svg": "15.12.1",
+    "react-native-worklets": "0.6.1",
+    "@expo/vector-icons": "^15.0.3",
+    "@react-navigation/native": "^7.1.6",
+    "@react-navigation/native-stack": "^7.3.10",
+    "@react-navigation/bottom-tabs": "^7.3.10",
+    "axios": "^1.7.9",
+    "zustand": "^5.0.2",
+    "i18next": "^24.0.5",
+    "react-i18next": "^15.1.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.1.0",
+    "typescript": "~5.9.0",
+    "babel-preset-expo": "~54.0.10"
+  },
+  "private": true
+}

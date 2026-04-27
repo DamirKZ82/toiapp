@@ -1,0 +1,224 @@
+import React, { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Button, Chip, TextInput } from 'react-native-paper';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import { CommonActions } from '@react-navigation/native';
+
+import { Screen } from '@/components/Screen';
+import { Loader } from '@/components/Loader';
+import { ErrorBanner } from '@/components/ErrorBanner';
+import { DatePickerSheet } from '@/components/DatePicker';
+
+import { bookingsApi, dictsApi, hallsApi, ApiError } from '@/api';
+import type { PublicHallDetails } from '@/api';
+import type { CalendarDay, EventType } from '@/api/types';
+import { colors, radii, spacing } from '@/theme';
+import { addMonths, formatDateHuman, formatPrice, monthOf, todayIso } from '@/utils/format';
+import { dictName } from '@/utils/i18nDict';
+import { useAuthStore } from '@/store/authStore';
+import type { SearchStackParamList } from '@/navigation/types';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+type Props = NativeStackScreenProps<SearchStackParamList, 'BookingForm'>;
+
+export default function BookingFormScreen({ route, navigation }: Props) {
+  const { t } = useTranslation();
+  const { hallGuid, initialDate } = route.params;
+  const lang = useAuthStore((s) => s.user?.language ?? 'ru');
+
+  const [hall, setHall] = useState<PublicHallDetails | null>(null);
+  const [eventTypes, setEventTypes] = useState<EventType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [date, setDate] = useState<string | null>(initialDate ?? null);
+  const [dateOpen, setDateOpen] = useState(false);
+  const [guests, setGuests] = useState('');
+  const [eventTypeId, setEventTypeId] = useState<number | null>(null);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  // Кэш календаря по месяцам (чтобы пикер сразу красил занятые даты)
+  const [calCache, setCalCache] = useState<Record<string, CalendarDay[]>>({});
+  const [shownMonth, setShownMonth] = useState(monthOf(todayIso()));
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [h, et] = await Promise.all([
+          hallsApi.getPublic(hallGuid),
+          dictsApi.eventTypes(),
+        ]);
+        setHall(h.hall);
+        setEventTypes(et.items);
+      } catch (e) {
+        setError(e instanceof ApiError ? e.message : t('common.error_generic'));
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [hallGuid, t]);
+
+  // Загружаем календарь на выбранный месяц, когда открывается пикер
+  useEffect(() => {
+    if (!dateOpen) return;
+    if (calCache[shownMonth]) return;
+    (async () => {
+      try {
+        const resp = await hallsApi.calendar(hallGuid, shownMonth);
+        setCalCache((prev) => ({ ...prev, [shownMonth]: resp.items }));
+      } catch { /* ignore */ }
+    })();
+  }, [dateOpen, shownMonth, hallGuid, calCache]);
+
+  const calendarAll: CalendarDay[] = React.useMemo(() => {
+    return Object.values(calCache).flat();
+  }, [calCache]);
+
+  const priceOnDate = React.useMemo(() => {
+    if (!hall || !date) return null;
+    const match = calendarAll.find((d) => d.date === date);
+    return match?.price ?? hall.price_weekday;
+  }, [hall, date, calendarAll]);
+
+  const submit = async () => {
+    if (!hall) return;
+    if (!date) { setError(t('booking_form.need_date')); return; }
+    const n = parseInt(guests, 10);
+    if (!Number.isFinite(n) || n <= 0) { setError(t('booking_form.need_guests')); return; }
+
+    setSubmitting(true);
+    setError(null);
+    try {
+      await bookingsApi.create({
+        hall_guid: hall.guid,
+        event_date: date,
+        guests_count: n,
+        event_type_id: eventTypeId ?? undefined,
+        comment: comment.trim() || undefined,
+      });
+      // После создания заявки бэк автоматически создаёт чат.
+      // Переходим в таб "Сообщения", где юзер увидит новый чат с владельцем.
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'SearchHome' }],
+        }),
+      );
+      navigation.getParent()?.dispatch(
+        CommonActions.navigate({ name: 'Messages', params: { screen: 'MessagesHome' } }),
+      );
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : t('common.error_generic'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) return <Screen><Loader /></Screen>;
+  if (!hall) {
+    return <Screen><ErrorBanner message={error ?? t('common.error_generic')} /></Screen>;
+  }
+
+  return (
+    <Screen scroll>
+      <Text style={styles.title}>{t('booking_form.title')}</Text>
+      <Text style={styles.hallName}>{hall.name}</Text>
+
+      <ErrorBanner message={error} />
+
+      <Text style={styles.label}>{t('booking_form.date_label')}</Text>
+      <Pressable style={styles.dateField} onPress={() => setDateOpen(true)}>
+        <Icon name="calendar" size={18} color={colors.muted} />
+        <Text style={[styles.dateText, !date && styles.placeholder]}>
+          {date ? formatDateHuman(date, lang) : t('booking_form.date_placeholder')}
+        </Text>
+      </Pressable>
+
+      {priceOnDate != null && date ? (
+        <Text style={styles.priceHint}>
+          {t('booking_form.price_on_date', { date: formatDateHuman(date, lang) })}: {formatPrice(priceOnDate)}
+        </Text>
+      ) : null}
+
+      <Text style={styles.label}>{t('booking_form.guests_label')}</Text>
+      <TextInput
+        mode="outlined"
+        keyboardType="number-pad"
+        value={guests}
+        onChangeText={(v) => setGuests(v.replace(/\D/g, '').slice(0, 5))}
+        placeholder={hall.capacity_max ? `${hall.capacity_min ?? 1}-${hall.capacity_max}` : '150'}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>{t('booking_form.event_type_label')}</Text>
+      <View style={styles.chips}>
+        {eventTypes.map((et) => (
+          <Chip
+            key={et.id}
+            selected={eventTypeId === et.id}
+            showSelectedOverlay
+            onPress={() => setEventTypeId(eventTypeId === et.id ? null : et.id)}
+            style={styles.chip}
+          >
+            {dictName(et, lang)}
+          </Chip>
+        ))}
+      </View>
+
+      <Text style={styles.label}>{t('booking_form.comment_label')}</Text>
+      <TextInput
+        mode="outlined"
+        value={comment}
+        onChangeText={setComment}
+        placeholder={t('booking_form.comment_placeholder')}
+        multiline
+        numberOfLines={3}
+        style={[styles.input, { minHeight: 90 }]}
+      />
+
+      <Button
+        mode="contained"
+        onPress={submit}
+        loading={submitting}
+        disabled={submitting}
+        style={styles.submit}
+      >
+        {t('booking_form.submit')}
+      </Button>
+
+      <DatePickerSheet
+        visible={dateOpen}
+        value={date}
+        onChange={setDate}
+        onClose={() => setDateOpen(false)}
+        calendar={calendarAll}
+        blockPending={false}
+        title={t('booking_form.date_label')}
+      />
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  title: { fontSize: 22, fontWeight: '700', color: colors.onSurface },
+  hallName: { fontSize: 15, color: colors.muted, marginTop: 4, marginBottom: spacing.lg },
+  label: {
+    fontSize: 13, fontWeight: '600', color: colors.muted,
+    textTransform: 'uppercase', marginBottom: spacing.sm, marginTop: spacing.md,
+  },
+  dateField: {
+    flexDirection: 'row', alignItems: 'center',
+    borderWidth: 1, borderColor: colors.outline, borderRadius: radii.sm,
+    paddingHorizontal: spacing.md, paddingVertical: 14,
+    backgroundColor: colors.surface,
+  },
+  dateText: { marginLeft: spacing.sm, fontSize: 15, color: colors.onSurface },
+  placeholder: { color: colors.muted },
+  priceHint: { fontSize: 13, color: colors.muted, marginTop: spacing.sm },
+  input: { backgroundColor: colors.surface },
+  chips: { flexDirection: 'row', flexWrap: 'wrap' },
+  chip: { marginRight: spacing.sm, marginBottom: spacing.sm },
+  submit: { marginTop: spacing.lg, marginBottom: spacing.lg, paddingVertical: spacing.xs },
+});

@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Toyhana",
+    "slug": "toyhana",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "kz.toyhana.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Чтобы показать залы в вашем городе"
+      }
+    },
+    "android": {
+      "package": "kz.toyhana.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-localization",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Чтобы показать залы в вашем городе"
+        }
+      ]
+    ],
+    "extra": {
+      "apiBaseUrl": "http://192.168.10.16:4000"
+    }
+  }
+}

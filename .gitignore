@@ -1,0 +1,40 @@
+﻿# Python (toyhana-back)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Node / Expo (toyhana-front)
+node_modules/
+.expo/
+.expo-shared/
+dist/
+*.tsbuildinfo
+
+# Секреты
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Загрузки
+uploads/
+toyhana-back/uploads/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Логи
+*.log
+
+# Сборки мобильного
+*.apk
+*.aab
+*.ipa
