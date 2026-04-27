@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { Button, Chip, Switch, TextInput } from 'react-native-paper';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -15,13 +15,48 @@ import type { OwnerHallFull } from '@/api';
 import { API_BASE_URL } from '@/config';
 import { dictName } from '@/utils/i18nDict';
 import { useAuthStore } from '@/store/authStore';
-import { colors, radii, spacing } from '@/theme';
+import { radii, spacing } from '@/theme';
+import { useStyles } from '@/theme/useStyles';
+import { useThemeColors } from '@/theme/useThemeColors';
 import type { ProfileStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'HallForm'>;
 
 export default function HallFormScreen({ route, navigation }: Props) {
+  const styles = useStyles((c) => ({
+  label: {
+    fontSize: 13, fontWeight: '600', color: c.muted,
+    textTransform: 'uppercase', marginTop: spacing.md, marginBottom: spacing.sm,
+  },
+  hint: { fontSize: 12, color: c.muted, marginBottom: spacing.sm },
+  input: { backgroundColor: c.surface, marginBottom: spacing.xs },
+  row: { flexDirection: 'row', gap: spacing.sm },
+  halfInput: { flex: 1 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap' },
+  chip: { marginRight: spacing.sm, marginBottom: spacing.sm },
+  activeRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+  },
+  activeLabel: { fontSize: 15, color: c.onSurface },
+  submit: { marginTop: spacing.md, paddingVertical: spacing.xs },
+  photoSection: { marginTop: spacing.lg },
+  photoHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  photoList: { marginTop: spacing.sm },
+  photoItem: { marginRight: spacing.sm, position: 'relative' },
+  photoThumb: { width: 90, height: 90, borderRadius: radii.md, backgroundColor: c.surfaceVariant },
+  photoDelete: {
+    position: 'absolute', top: 4, right: 4,
+    width: 22, height: 22, borderRadius: 11,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  deleteBtn: { marginTop: spacing.lg, marginBottom: spacing.lg, borderColor: c.error },
+}));
+
+  const colors = useThemeColors();
+
   const { t } = useTranslation();
   const lang = useAuthStore((s) => s.user?.language ?? 'ru');
   const { venueGuid, hallGuid } = route.params;
@@ -218,7 +253,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
     <Screen scroll>
       <ErrorBanner message={error} />
 
-      <Label>{t('owner.hall_name_label')}</Label>
+      <Text style={styles.label}>{t('owner.hall_name_label')}</Text>
       <TextInput
         mode="outlined"
         value={name}
@@ -227,7 +262,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
         style={styles.input}
       />
 
-      <Label>{t('owner.hall_description_label')}</Label>
+      <Text style={styles.label}>{t('owner.hall_description_label')}</Text>
       <TextInput
         mode="outlined"
         value={description}
@@ -238,7 +273,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
         style={[styles.input, { minHeight: 80 }]}
       />
 
-      <Label>{t('owner.area_sqm_label')}</Label>
+      <Text style={styles.label}>{t('owner.area_sqm_label')}</Text>
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
@@ -247,7 +282,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
         style={styles.input}
       />
 
-      <Label>{t('owner.capacity_label')}</Label>
+      <Text style={styles.label}>{t('owner.capacity_label')}</Text>
       <View style={styles.row}>
         <TextInput
           mode="outlined"
@@ -267,7 +302,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
         />
       </View>
 
-      <Label>{t('owner.price_weekday_label')}</Label>
+      <Text style={styles.label}>{t('owner.price_weekday_label')}</Text>
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
@@ -277,7 +312,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
         style={styles.input}
       />
 
-      <Label>{t('owner.price_weekend_label')}</Label>
+      <Text style={styles.label}>{t('owner.price_weekend_label')}</Text>
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
@@ -287,7 +322,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
         style={styles.input}
       />
 
-      <Label>{t('owner.amenities_label')}</Label>
+      <Text style={styles.label}>{t('owner.amenities_label')}</Text>
       <View style={styles.chips}>
         {amenitiesAll.map((a) => (
           <Chip
@@ -322,7 +357,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
       {/* Блок фото — только после того, как зал уже создан */}
       <View style={styles.photoSection}>
         <View style={styles.photoHeader}>
-          <Label>{t('owner.photos_label')}</Label>
+          <Text style={styles.label}>{t('owner.photos_label')}</Text>
           {hall ? (
             <Button
               mode="text"
@@ -375,37 +410,3 @@ export default function HallFormScreen({ route, navigation }: Props) {
   );
 }
 
-function Label({ children }: { children: string }) {
-  return <Text style={styles.label}>{children}</Text>;
-}
-
-const styles = StyleSheet.create({
-  label: {
-    fontSize: 13, fontWeight: '600', color: colors.muted,
-    textTransform: 'uppercase', marginTop: spacing.md, marginBottom: spacing.sm,
-  },
-  hint: { fontSize: 12, color: colors.muted, marginBottom: spacing.sm },
-  input: { backgroundColor: colors.surface, marginBottom: spacing.xs },
-  row: { flexDirection: 'row', gap: spacing.sm },
-  halfInput: { flex: 1 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap' },
-  chip: { marginRight: spacing.sm, marginBottom: spacing.sm },
-  activeRow: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-  },
-  activeLabel: { fontSize: 15, color: colors.onSurface },
-  submit: { marginTop: spacing.md, paddingVertical: spacing.xs },
-  photoSection: { marginTop: spacing.lg },
-  photoHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  photoList: { marginTop: spacing.sm },
-  photoItem: { marginRight: spacing.sm, position: 'relative' },
-  photoThumb: { width: 90, height: 90, borderRadius: radii.md, backgroundColor: colors.surfaceVariant },
-  photoDelete: {
-    position: 'absolute', top: 4, right: 4,
-    width: 22, height: 22, borderRadius: 11,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  deleteBtn: { marginTop: spacing.lg, marginBottom: spacing.lg, borderColor: colors.error },
-});

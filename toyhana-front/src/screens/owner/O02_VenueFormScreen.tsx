@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -13,13 +13,38 @@ import { dictsApi, venuesApi, ApiError } from '@/api';
 import type { City } from '@/api/types';
 import { dictName } from '@/utils/i18nDict';
 import { useAuthStore } from '@/store/authStore';
-import { colors, radii, spacing } from '@/theme';
+import { radii, spacing } from '@/theme';
+import { useStyles } from '@/theme/useStyles';
+import { useThemeColors } from '@/theme/useThemeColors';
 import type { ProfileStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'VenueForm'>;
 
 export default function VenueFormScreen({ route, navigation }: Props) {
+  const styles = useStyles((c) => ({
+  label: {
+    fontSize: 13, fontWeight: '600', color: c.muted,
+    textTransform: 'uppercase', marginTop: spacing.md, marginBottom: spacing.sm,
+  },
+  hint: { fontSize: 12, color: c.muted, marginBottom: spacing.sm },
+  dropdown: {
+    flexDirection: 'row', alignItems: 'center',
+    borderWidth: 1, borderColor: c.outline, borderRadius: radii.sm,
+    paddingHorizontal: spacing.md, paddingVertical: 14,
+    backgroundColor: c.surface,
+  },
+  dropdownText: { marginLeft: spacing.sm, fontSize: 15, color: c.onSurface },
+  placeholder: { color: c.muted },
+  input: { backgroundColor: c.surface, marginBottom: spacing.xs },
+  row: { flexDirection: 'row', gap: spacing.sm },
+  halfInput: { flex: 1 },
+  submit: { marginTop: spacing.lg, paddingVertical: spacing.xs },
+  deleteBtn: { marginTop: spacing.md, marginBottom: spacing.lg, borderColor: c.error },
+}));
+
+  const colors = useThemeColors();
+
   const { t } = useTranslation();
   const lang = useAuthStore((s) => s.user?.language ?? 'ru');
   const editingGuid = route.params.venueGuid;
@@ -130,7 +155,7 @@ export default function VenueFormScreen({ route, navigation }: Props) {
     <Screen scroll>
       <ErrorBanner message={error} />
 
-      <Label>{t('owner.venue_city_label')}</Label>
+      <Text style={styles.label}>{t('owner.venue_city_label')}</Text>
       <Pressable style={styles.dropdown} onPress={() => setCityOpen(true)}>
         <Icon name="map-marker" size={18} color={colors.muted} />
         <Text style={[styles.dropdownText, !city && styles.placeholder]}>
@@ -138,7 +163,7 @@ export default function VenueFormScreen({ route, navigation }: Props) {
         </Text>
       </Pressable>
 
-      <Label>{t('owner.venue_name_label')}</Label>
+      <Text style={styles.label}>{t('owner.venue_name_label')}</Text>
       <TextInput
         mode="outlined"
         value={name}
@@ -147,7 +172,7 @@ export default function VenueFormScreen({ route, navigation }: Props) {
         style={styles.input}
       />
 
-      <Label>{t('owner.venue_address_label')}</Label>
+      <Text style={styles.label}>{t('owner.venue_address_label')}</Text>
       <TextInput
         mode="outlined"
         value={address}
@@ -156,7 +181,7 @@ export default function VenueFormScreen({ route, navigation }: Props) {
         style={styles.input}
       />
 
-      <Label>{t('owner.venue_description_label')}</Label>
+      <Text style={styles.label}>{t('owner.venue_description_label')}</Text>
       <TextInput
         mode="outlined"
         value={description}
@@ -167,7 +192,7 @@ export default function VenueFormScreen({ route, navigation }: Props) {
         style={[styles.input, { minHeight: 80 }]}
       />
 
-      <Label>{t('owner.venue_phone_label')}</Label>
+      <Text style={styles.label}>{t('owner.venue_phone_label')}</Text>
       <TextInput
         mode="outlined"
         value={phone}
@@ -177,7 +202,7 @@ export default function VenueFormScreen({ route, navigation }: Props) {
         style={styles.input}
       />
 
-      <Label>{t('owner.coordinates_label')}</Label>
+      <Text style={styles.label}>{t('owner.coordinates_label')}</Text>
       <Text style={styles.hint}>{t('owner.coordinates_hint')}</Text>
       <View style={styles.row}>
         <TextInput
@@ -231,27 +256,3 @@ export default function VenueFormScreen({ route, navigation }: Props) {
   );
 }
 
-function Label({ children }: { children: string }) {
-  return <Text style={styles.label}>{children}</Text>;
-}
-
-const styles = StyleSheet.create({
-  label: {
-    fontSize: 13, fontWeight: '600', color: colors.muted,
-    textTransform: 'uppercase', marginTop: spacing.md, marginBottom: spacing.sm,
-  },
-  hint: { fontSize: 12, color: colors.muted, marginBottom: spacing.sm },
-  dropdown: {
-    flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1, borderColor: colors.outline, borderRadius: radii.sm,
-    paddingHorizontal: spacing.md, paddingVertical: 14,
-    backgroundColor: colors.surface,
-  },
-  dropdownText: { marginLeft: spacing.sm, fontSize: 15, color: colors.onSurface },
-  placeholder: { color: colors.muted },
-  input: { backgroundColor: colors.surface, marginBottom: spacing.xs },
-  row: { flexDirection: 'row', gap: spacing.sm },
-  halfInput: { flex: 1 },
-  submit: { marginTop: spacing.lg, paddingVertical: spacing.xs },
-  deleteBtn: { marginTop: spacing.md, marginBottom: spacing.lg, borderColor: colors.error },
-});

@@ -14,13 +14,48 @@ import { venuesApi, ApiError } from '@/api';
 import type { VenueDetails } from '@/api';
 import { API_BASE_URL } from '@/config';
 import { formatPrice } from '@/utils/format';
-import { colors, radii, spacing } from '@/theme';
+import { radii, spacing } from '@/theme';
+import { useStyles } from '@/theme/useStyles';
+import { useThemeColors } from '@/theme/useThemeColors';
 import type { ProfileStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'VenueDetails'>;
 
 export default function VenueDetailsScreen({ route, navigation }: Props) {
+  const styles = useStyles((c) => ({
+  list: { padding: spacing.md, paddingBottom: spacing.xl, flexGrow: 1 },
+  header: { marginBottom: spacing.md },
+  name: { fontSize: 22, fontWeight: '700', color: c.onSurface },
+  address: { fontSize: 14, color: c.muted, marginTop: 4 },
+  editBtn: { marginTop: spacing.md, alignSelf: 'flex-start' },
+  sectionRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginTop: spacing.sm, marginBottom: spacing.sm,
+  },
+  sectionTitle: {
+    fontSize: 13, fontWeight: '700', color: c.muted, textTransform: 'uppercase',
+  },
+  emptyWrap: { marginTop: spacing.xl },
+  emptyBtn: { marginHorizontal: spacing.xl, marginTop: spacing.md },
+  hallCard: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: c.surface, borderRadius: radii.lg,
+    padding: spacing.sm, marginBottom: spacing.sm,
+    borderWidth: StyleSheet.hairlineWidth, borderColor: c.outline,
+  },
+  hallThumb: { width: 68, height: 68, borderRadius: radii.md, backgroundColor: c.surfaceVariant },
+  hallThumbEmpty: { alignItems: 'center', justifyContent: 'center' },
+  hallBody: { flex: 1, marginLeft: spacing.sm },
+  hallName: { fontSize: 15, fontWeight: '700', color: c.onSurface },
+  hallMeta: { fontSize: 12, color: c.muted, marginTop: 2 },
+  hallPrice: { fontSize: 12, color: c.primary, marginTop: 2 },
+  inactive: { fontSize: 11, color: c.error, marginTop: 2 },
+  hallActions: { flexDirection: 'row', alignItems: 'center' },
+}));
+
+  const colors = useThemeColors();
+
   const { t } = useTranslation();
   const { venueGuid } = route.params;
 
@@ -138,34 +173,3 @@ export default function VenueDetailsScreen({ route, navigation }: Props) {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  list: { padding: spacing.md, paddingBottom: spacing.xl, flexGrow: 1 },
-  header: { marginBottom: spacing.md },
-  name: { fontSize: 22, fontWeight: '700', color: colors.onSurface },
-  address: { fontSize: 14, color: colors.muted, marginTop: 4 },
-  editBtn: { marginTop: spacing.md, alignSelf: 'flex-start' },
-  sectionRow: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    marginTop: spacing.sm, marginBottom: spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: 13, fontWeight: '700', color: colors.muted, textTransform: 'uppercase',
-  },
-  emptyWrap: { marginTop: spacing.xl },
-  emptyBtn: { marginHorizontal: spacing.xl, marginTop: spacing.md },
-  hallCard: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: colors.surface, borderRadius: radii.lg,
-    padding: spacing.sm, marginBottom: spacing.sm,
-    borderWidth: StyleSheet.hairlineWidth, borderColor: colors.outline,
-  },
-  hallThumb: { width: 68, height: 68, borderRadius: radii.md, backgroundColor: colors.surfaceVariant },
-  hallThumbEmpty: { alignItems: 'center', justifyContent: 'center' },
-  hallBody: { flex: 1, marginLeft: spacing.sm },
-  hallName: { fontSize: 15, fontWeight: '700', color: colors.onSurface },
-  hallMeta: { fontSize: 12, color: colors.muted, marginTop: 2 },
-  hallPrice: { fontSize: 12, color: colors.primary, marginTop: 2 },
-  inactive: { fontSize: 11, color: colors.error, marginTop: 2 },
-  hallActions: { flexDirection: 'row', alignItems: 'center' },
-});

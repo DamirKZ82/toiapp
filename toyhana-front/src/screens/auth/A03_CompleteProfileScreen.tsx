@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Keyboard, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Text, View } from 'react-native';
 import { Button, SegmentedButtons, TextInput } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,8 @@ import { Screen } from '@/components/Screen';
 import { ErrorBanner } from '@/components/ErrorBanner';
 import { authApi, ApiError } from '@/api';
 import { useAuthStore } from '@/store/authStore';
-import { colors, spacing } from '@/theme';
+import { spacing } from '@/theme';
+import { useStyles } from '@/theme/useStyles';
 
 export default function CompleteProfileScreen() {
   const { t } = useTranslation();
@@ -18,6 +19,15 @@ export default function CompleteProfileScreen() {
   const [language, setLanguage] = useState<'ru' | 'kz'>(currentLang);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const styles = useStyles((c) => ({
+    title: { fontSize: 24, fontWeight: '700' as const, color: c.onSurface, marginTop: spacing.lg },
+    subtitle: { fontSize: 14, color: c.muted, marginTop: spacing.xs, marginBottom: spacing.lg },
+    input: { marginBottom: spacing.md, backgroundColor: c.surface },
+    langLabel: { fontSize: 14, color: c.muted, marginBottom: spacing.sm },
+    segments: { marginBottom: spacing.lg },
+    button: { paddingVertical: spacing.xs, marginBottom: spacing.md },
+  }));
 
   const onSubmit = async () => {
     if (!fullName.trim()) {
@@ -30,7 +40,6 @@ export default function CompleteProfileScreen() {
     try {
       const res = await authApi.completeProfile(fullName.trim(), language);
       await setUser(res.user);
-      // После setUser AppNavigator увидит заполненный профиль и переключится на AppStack.
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error_generic'));
     } finally {
@@ -79,12 +88,3 @@ export default function CompleteProfileScreen() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  title: { fontSize: 24, fontWeight: '700', color: colors.onSurface, marginTop: spacing.lg },
-  subtitle: { fontSize: 14, color: colors.muted, marginTop: spacing.xs, marginBottom: spacing.lg },
-  input: { marginBottom: spacing.md, backgroundColor: colors.surface },
-  langLabel: { fontSize: 14, color: colors.muted, marginBottom: spacing.sm },
-  segments: { marginBottom: spacing.lg },
-  button: { paddingVertical: spacing.xs, marginBottom: spacing.md },
-});

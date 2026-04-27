@@ -1,9 +1,9 @@
 import React from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
 import { radii, spacing } from '@/theme';
-import { useThemeColors } from '@/theme/useThemeColors';
+import { useThemeColors, useIsDark } from '@/theme/useThemeColors';
 import { useStyles } from '@/theme/useStyles';
 import { formatPrice } from '@/utils/format';
 import { dictName } from '@/utils/i18nDict';
@@ -21,15 +21,20 @@ interface Props {
 export function HallCard({ item, onPress, onToggleFavorite, isFavorite }: Props) {
   const lang = useAuthStore((s) => s.user?.language ?? 'ru');
   const colors = useThemeColors();
+  const isDark = useIsDark();
   const styles = useStyles((c) => ({
     card: {
       backgroundColor: c.surface,
       borderRadius: radii.lg,
       marginBottom: spacing.md,
       overflow: 'hidden' as const,
-      elevation: 1,
+      // На светлой теме — тонкая граница вместо тени (с бежевым фоном тень почти не видна).
+      // На тёмной — мягкая тень для отделения от фона.
+      borderWidth: isDark ? 0 : StyleSheet.hairlineWidth,
+      borderColor: c.outline,
+      elevation: isDark ? 2 : 0,
       shadowColor: '#000',
-      shadowOpacity: c.background === '#0F0F0F' ? 0.3 : 0.05,
+      shadowOpacity: isDark ? 0.3 : 0,
       shadowRadius: 4,
       shadowOffset: { width: 0, height: 1 },
     },

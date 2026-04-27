@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Button, Chip, TextInput } from 'react-native-paper';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,9 @@ import { DatePickerSheet } from '@/components/DatePicker';
 import { bookingsApi, dictsApi, hallsApi, ApiError } from '@/api';
 import type { PublicHallDetails } from '@/api';
 import type { CalendarDay, EventType } from '@/api/types';
-import { colors, radii, spacing } from '@/theme';
+import { radii, spacing } from '@/theme';
+import { useStyles } from '@/theme/useStyles';
+import { useThemeColors } from '@/theme/useThemeColors';
 import { addMonths, formatDateHuman, formatPrice, monthOf, todayIso } from '@/utils/format';
 import { dictName } from '@/utils/i18nDict';
 import { useAuthStore } from '@/store/authStore';
@@ -23,6 +25,30 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 type Props = NativeStackScreenProps<SearchStackParamList, 'BookingForm'>;
 
 export default function BookingFormScreen({ route, navigation }: Props) {
+  const styles = useStyles((c) => ({
+  title: { fontSize: 22, fontWeight: '700', color: c.onSurface },
+  hallName: { fontSize: 15, color: c.muted, marginTop: 4, marginBottom: spacing.lg },
+  label: {
+    fontSize: 13, fontWeight: '600', color: c.muted,
+    textTransform: 'uppercase', marginBottom: spacing.sm, marginTop: spacing.md,
+  },
+  dateField: {
+    flexDirection: 'row', alignItems: 'center',
+    borderWidth: 1, borderColor: c.outline, borderRadius: radii.sm,
+    paddingHorizontal: spacing.md, paddingVertical: 14,
+    backgroundColor: c.surface,
+  },
+  dateText: { marginLeft: spacing.sm, fontSize: 15, color: c.onSurface },
+  placeholder: { color: c.muted },
+  priceHint: { fontSize: 13, color: c.muted, marginTop: spacing.sm },
+  input: { backgroundColor: c.surface },
+  chips: { flexDirection: 'row', flexWrap: 'wrap' },
+  chip: { marginRight: spacing.sm, marginBottom: spacing.sm },
+  submit: { marginTop: spacing.lg, marginBottom: spacing.lg, paddingVertical: spacing.xs },
+}));
+
+  const colors = useThemeColors();
+
   const { t } = useTranslation();
   const { hallGuid, initialDate } = route.params;
   const lang = useAuthStore((s) => s.user?.language ?? 'ru');
@@ -200,25 +226,3 @@ export default function BookingFormScreen({ route, navigation }: Props) {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  title: { fontSize: 22, fontWeight: '700', color: colors.onSurface },
-  hallName: { fontSize: 15, color: colors.muted, marginTop: 4, marginBottom: spacing.lg },
-  label: {
-    fontSize: 13, fontWeight: '600', color: colors.muted,
-    textTransform: 'uppercase', marginBottom: spacing.sm, marginTop: spacing.md,
-  },
-  dateField: {
-    flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1, borderColor: colors.outline, borderRadius: radii.sm,
-    paddingHorizontal: spacing.md, paddingVertical: 14,
-    backgroundColor: colors.surface,
-  },
-  dateText: { marginLeft: spacing.sm, fontSize: 15, color: colors.onSurface },
-  placeholder: { color: colors.muted },
-  priceHint: { fontSize: 13, color: colors.muted, marginTop: spacing.sm },
-  input: { backgroundColor: colors.surface },
-  chips: { flexDirection: 'row', flexWrap: 'wrap' },
-  chip: { marginRight: spacing.sm, marginBottom: spacing.sm },
-  submit: { marginTop: spacing.lg, marginBottom: spacing.lg, paddingVertical: spacing.xs },
-});

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Keyboard, StyleSheet, Text } from 'react-native';
+import { Keyboard, Text } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,8 @@ import { Screen } from '@/components/Screen';
 import { ErrorBanner } from '@/components/ErrorBanner';
 import { authApi, ApiError } from '@/api';
 import { maskPhoneInput, normalizeKzPhone } from '@/utils/phone';
-import { colors, spacing } from '@/theme';
+import { spacing } from '@/theme';
+import { useStyles } from '@/theme/useStyles';
 import type { AuthStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -19,6 +20,13 @@ export default function PhoneScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const styles = useStyles((c) => ({
+    title: { fontSize: 24, fontWeight: '700' as const, color: c.onSurface, marginTop: spacing.lg },
+    subtitle: { fontSize: 14, color: c.muted, marginTop: spacing.xs, marginBottom: spacing.lg },
+    input: { marginBottom: spacing.md, backgroundColor: c.surface },
+    button: { paddingVertical: spacing.xs },
+  }));
+
   const onChange = (raw: string) => {
     setInput(maskPhoneInput(raw));
     setError(null);
@@ -27,7 +35,6 @@ export default function PhoneScreen({ navigation }: Props) {
   const onSubmit = async () => {
     const phone = normalizeKzPhone(input);
     if (!phone) {
-      setError(t('auth.phone_subtitle')); // простейшее сообщение, серверная валидация даст точную
       setError('Некорректный номер. Формат: +7 (7XX) XXX XX XX');
       return;
     }
@@ -73,10 +80,3 @@ export default function PhoneScreen({ navigation }: Props) {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  title: { fontSize: 24, fontWeight: '700', color: colors.onSurface, marginTop: spacing.lg },
-  subtitle: { fontSize: 14, color: colors.muted, marginTop: spacing.xs, marginBottom: spacing.lg },
-  input: { marginBottom: spacing.md, backgroundColor: colors.surface },
-  button: { paddingVertical: spacing.xs },
-});

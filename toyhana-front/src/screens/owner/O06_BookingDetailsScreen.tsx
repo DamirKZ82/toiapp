@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
@@ -11,7 +11,9 @@ import { BottomModal } from '@/components/BottomModal';
 
 import { bookingsApi, dictsApi, ApiError } from '@/api';
 import type { Booking, EventType } from '@/api/types';
-import { colors, radii, spacing } from '@/theme';
+import { radii, spacing } from '@/theme';
+import { useStyles } from '@/theme/useStyles';
+import { useThemeColors } from '@/theme/useThemeColors';
 import { formatDateHuman, formatPrice } from '@/utils/format';
 import { dictName } from '@/utils/i18nDict';
 import { useAuthStore } from '@/store/authStore';
@@ -21,6 +23,31 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 type Props = NativeStackScreenProps<ProfileStackParamList, 'BookingDetails'>;
 
 export default function BookingDetailsScreen({ route, navigation }: Props) {
+  const styles = useStyles((c) => ({
+  hallName: { fontSize: 22, fontWeight: '700', color: c.onSurface },
+  venue: { fontSize: 14, color: c.muted, marginTop: 4, marginBottom: spacing.md },
+  block: {
+    backgroundColor: c.surfaceVariant,
+    borderRadius: radii.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  row: { marginBottom: spacing.sm },
+  label: { fontSize: 12, fontWeight: '600', color: c.muted, textTransform: 'uppercase' },
+  value: { fontSize: 15, color: c.onSurface, marginTop: 2 },
+  actions: {
+    flexDirection: 'row', gap: spacing.sm,
+    marginTop: spacing.lg, marginBottom: spacing.lg,
+  },
+  rejectBtn: { flex: 1, borderColor: c.error },
+  confirmBtn: { flex: 1 },
+  modalTitle: { fontSize: 17, fontWeight: '700', color: c.onSurface, marginBottom: spacing.md },
+  modalInput: { backgroundColor: c.surface, minHeight: 90, marginBottom: spacing.md },
+  modalActions: { flexDirection: 'row', justifyContent: 'space-between' },
+}));
+
+  const colors = useThemeColors();
+
   const { t } = useTranslation();
   const lang = useAuthStore((s) => s.user?.language ?? 'ru');
   const { bookingGuid } = route.params;
@@ -106,11 +133,23 @@ export default function BookingDetailsScreen({ route, navigation }: Props) {
       <Text style={styles.venue}>{booking.hall?.venue_name ?? ''}</Text>
 
       <View style={styles.block}>
-        <Row label={t('owner.booking_date')} value={formatDateHuman(booking.event_date, lang)} />
-        <Row label={t('owner.booking_guests')} value={String(booking.guests_count)} />
-        {eventType ? <Row label={t('owner.booking_event_type')} value={dictName(eventType, lang)} /> : null}
+        <View style={styles.row}>
+        <Text style={styles.label}>{t('owner.booking_date')}</Text>
+        <Text style={styles.value}>{formatDateHuman(booking.event_date, lang)}</Text>
+      </View>
+        <View style={styles.row}>
+        <Text style={styles.label}>{t('owner.booking_guests')}</Text>
+        <Text style={styles.value}>{String(booking.guests_count)}</Text>
+      </View>
+        {eventType ? <View style={styles.row}>
+        <Text style={styles.label}>{t('owner.booking_event_type')}</Text>
+        <Text style={styles.value}>{dictName(eventType, lang)}</Text>
+      </View> : null}
         {booking.price_at_booking != null ? (
-          <Row label={t('owner.booking_price')} value={formatPrice(booking.price_at_booking)} />
+          <View style={styles.row}>
+        <Text style={styles.label}>{t('owner.booking_price')}</Text>
+        <Text style={styles.value}>{formatPrice(booking.price_at_booking)}</Text>
+      </View>
         ) : null}
       </View>
 
@@ -186,34 +225,3 @@ export default function BookingDetailsScreen({ route, navigation }: Props) {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  hallName: { fontSize: 22, fontWeight: '700', color: colors.onSurface },
-  venue: { fontSize: 14, color: colors.muted, marginTop: 4, marginBottom: spacing.md },
-  block: {
-    backgroundColor: colors.surfaceVariant,
-    borderRadius: radii.md,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  row: { marginBottom: spacing.sm },
-  label: { fontSize: 12, fontWeight: '600', color: colors.muted, textTransform: 'uppercase' },
-  value: { fontSize: 15, color: colors.onSurface, marginTop: 2 },
-  actions: {
-    flexDirection: 'row', gap: spacing.sm,
-    marginTop: spacing.lg, marginBottom: spacing.lg,
-  },
-  rejectBtn: { flex: 1, borderColor: colors.error },
-  confirmBtn: { flex: 1 },
-  modalTitle: { fontSize: 17, fontWeight: '700', color: colors.onSurface, marginBottom: spacing.md },
-  modalInput: { backgroundColor: colors.surface, minHeight: 90, marginBottom: spacing.md },
-  modalActions: { flexDirection: 'row', justifyContent: 'space-between' },
-});

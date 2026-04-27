@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Keyboard, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Text, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +8,8 @@ import { ErrorBanner } from '@/components/ErrorBanner';
 import { authApi, ApiError } from '@/api';
 import { useAuthStore } from '@/store/authStore';
 import { formatKzPhoneDisplay } from '@/utils/phone';
-import { colors, spacing } from '@/theme';
+import { spacing } from '@/theme';
+import { useStyles } from '@/theme/useStyles';
 import type { AuthStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -26,6 +27,16 @@ export default function OtpScreen({ route, navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const styles = useStyles((c) => ({
+    title: { fontSize: 24, fontWeight: '700' as const, color: c.onSurface, marginTop: spacing.lg },
+    subtitle: { fontSize: 14, color: c.muted, marginTop: spacing.xs, marginBottom: spacing.lg },
+    input: { marginBottom: spacing.sm, backgroundColor: c.surface },
+    hint: { fontSize: 12, color: c.muted, marginBottom: spacing.md },
+    button: { paddingVertical: spacing.xs },
+    resendWrap: { alignItems: 'center' as const, marginTop: spacing.md },
+    cooldown: { color: c.muted, fontSize: 14 },
+  }));
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -50,11 +61,9 @@ export default function OtpScreen({ route, navigation }: Props) {
     try {
       const res = await authApi.verifyOtp(phone, code);
       await setAuth(res.token, res.user);
-      // Если юзер новый — ведём на заполнение профиля.
       if (res.is_new_user) {
         navigation.navigate('CompleteProfile');
       }
-      // Иначе — auth state изменится и AppNavigator сам переключит на AppStack.
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error_generic'));
     } finally {
@@ -121,13 +130,3 @@ export default function OtpScreen({ route, navigation }: Props) {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  title: { fontSize: 24, fontWeight: '700', color: colors.onSurface, marginTop: spacing.lg },
-  subtitle: { fontSize: 14, color: colors.muted, marginTop: spacing.xs, marginBottom: spacing.lg },
-  input: { marginBottom: spacing.sm, backgroundColor: colors.surface },
-  hint: { fontSize: 12, color: colors.muted, marginBottom: spacing.md },
-  button: { paddingVertical: spacing.xs },
-  resendWrap: { alignItems: 'center', marginTop: spacing.md },
-  cooldown: { color: colors.muted, fontSize: 14 },
-});
