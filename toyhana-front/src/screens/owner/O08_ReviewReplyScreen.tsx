@@ -48,7 +48,7 @@ export default function ReviewReplyScreen({ route, navigation }: Props) {
   };
 
   return (
-    <Screen>
+    <Screen scroll>
       <Text style={styles.title}>{t('owner.review_reply_title')}</Text>
       <Text style={styles.hallName}>{hallName}</Text>
 

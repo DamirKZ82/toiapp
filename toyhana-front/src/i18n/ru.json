@@ -13,7 +13,8 @@
     "retry": "Повторить",
     "close": "Закрыть",
     "yes": "Да",
-    "no": "Нет"
+    "no": "Нет",
+    "done": "Готово"
   },
   "auth_gate": {
     "title": "Вход или регистрация",
@@ -26,7 +27,7 @@
     "reason_generic": "Войдите, чтобы продолжить."
   },
   "auth": {
-    "phone_title": "Вход в ToyHUB",
+    "phone_title": "Вход в ToiApp",
     "phone_subtitle": "Введите номер телефона — пришлём код",
     "phone_placeholder": "+7 (___) ___-__-__",
     "phone_button": "Получить код",
@@ -185,11 +186,9 @@
     "delete_venue": "Удалить заведение",
     "delete_venue_confirm_title": "Удалить заведение?",
     "delete_venue_confirm_text": "Будут удалены все залы, фото и история заявок. Это действие нельзя отменить.",
-
     "venue_details_halls": "Залы",
     "add_hall": "Добавить зал",
     "no_halls": "Пока нет залов",
-
     "hall_form_new": "Новый зал",
     "hall_form_edit": "Редактирование зала",
     "hall_name_label": "Название зала",
@@ -213,7 +212,6 @@
     "delete_photo_title": "Удалить фото?",
     "save_first_hint": "Сначала сохраните зал, затем добавьте фото",
     "calendar_button": "Календарь занятости",
-
     "incoming_title": "Входящие заявки",
     "incoming_empty_title": "Пока нет заявок",
     "incoming_empty_hint": "Заявки от клиентов появятся здесь",
@@ -221,7 +219,6 @@
     "incoming_filter_pending": "Новые",
     "incoming_filter_confirmed": "Подтверждённые",
     "incoming_filter_rejected": "Отклонённые",
-
     "booking_details_title": "Заявка",
     "booking_client": "Клиент",
     "booking_phone": "Телефон",
@@ -237,12 +234,10 @@
     "reject_confirm": "Отклонить",
     "confirm_success": "Заявка подтверждена",
     "confirm_auto_rejected": "Отклонено других заявок на эту дату: {{count}}",
-
     "calendar_title": "Календарь — {{hall}}",
     "legend_free": "Свободно",
     "legend_pending": "Заявки",
     "legend_confirmed": "Подтверждено",
-
     "review_reply_title": "Ответ на отзыв",
     "review_reply_label": "Ваш ответ",
     "review_reply_placeholder": "Спасибо за отзыв…",

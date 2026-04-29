@@ -21,6 +21,7 @@ import { dictName } from '@/utils/i18nDict';
 import { useAuthStore } from '@/store/authStore';
 import type { SearchStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { KEYBOARD_TOOLBAR_ID } from '@/components/KeyboardToolbar';
 
 type Props = NativeStackScreenProps<SearchStackParamList, 'BookingForm'>;
 
@@ -172,6 +173,7 @@ export default function BookingFormScreen({ route, navigation }: Props) {
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
+        inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
         value={guests}
         onChangeText={(v) => setGuests(v.replace(/\D/g, '').slice(0, 5))}
         placeholder={hall.capacity_max ? `${hall.capacity_min ?? 1}-${hall.capacity_max}` : '150'}

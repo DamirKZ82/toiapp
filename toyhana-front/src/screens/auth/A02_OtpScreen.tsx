@@ -12,6 +12,7 @@ import { spacing } from '@/theme';
 import { useStyles } from '@/theme/useStyles';
 import type { AuthStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { KEYBOARD_TOOLBAR_ID } from '@/components/KeyboardToolbar';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Otp'>;
 
@@ -96,6 +97,7 @@ export default function OtpScreen({ route, navigation }: Props) {
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
+        inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
         value={code}
         onChangeText={onChange}
         placeholder={t('auth.otp_placeholder')}

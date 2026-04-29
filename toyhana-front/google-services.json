@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "854529592884",
-    "project_id": "toyhub-e521f",
-    "storage_bucket": "toyhub-e521f.firebasestorage.app"
+    "project_number": "221520781681",
+    "project_id": "toiappkz",
+    "storage_bucket": "toiappkz.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:854529592884:android:7f4bec62753d34a9870461",
+        "mobilesdk_app_id": "1:221520781681:android:0aafdf09283a38f2d5d6d0",
         "android_client_info": {
-          "package_name": "com.toyhub.app"
+          "package_name": "kz.toiapp.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBw5UfwzZl0d2WTFkPRVWZXViK5lepZ9yc"
+          "current_key": "AIzaSyDaAoVcgrg5jnk9Q2gpFHfy01DcJ3tG3j4"
         }
       ],
       "services": {

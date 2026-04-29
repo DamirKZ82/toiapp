@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from 'react-native-paper';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,8 @@ import { radii, spacing } from '@/theme';
 import { useStyles } from '@/theme/useStyles';
 import { useThemeColors } from '@/theme/useThemeColors';
 import { formatKzPhoneDisplay, normalizeKzPhone } from '@/utils/phone';
+import { useSafeBottomInset } from '@/utils/useSafeBottomInset';
+import { KEYBOARD_TOOLBAR_ID } from '@/components/KeyboardToolbar';
 
 type Step = 'phone' | 'otp' | 'profile';
 
@@ -52,6 +55,9 @@ export function AuthGateSheet() {
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const insets = useSafeAreaInsets();
+  const safeBottom = useSafeBottomInset();
+
   const styles = useStyles((cc) => ({
     backdrop: {
       flex: 1,
@@ -63,7 +69,7 @@ export function AuthGateSheet() {
       borderTopLeftRadius: radii.lg,
       borderTopRightRadius: radii.lg,
       padding: spacing.md,
-      paddingBottom: spacing.xl + spacing.md,
+      paddingBottom: spacing.xl + spacing.md + safeBottom,
       maxHeight: '90%' as const,
     },
     handle: {
@@ -242,6 +248,7 @@ export function AuthGateSheet() {
                   placeholder="+7 (___) ___-__-__"
                   placeholderTextColor={c.muted}
                   keyboardType="phone-pad"
+                  inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
                   style={styles.input}
                   autoFocus
                 />
@@ -270,6 +277,7 @@ export function AuthGateSheet() {
                   placeholder="0000"
                   placeholderTextColor={c.muted}
                   keyboardType="number-pad"
+                  inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
                   style={styles.input}
                   autoFocus
                   maxLength={4}

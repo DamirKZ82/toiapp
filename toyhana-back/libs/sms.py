@@ -32,7 +32,7 @@ def _build_otp_text(code: str) -> str:
     Текст SMS с OTP-кодом.
     Латиница — 1 SMS на 160 символов = дёшево. Кириллица — 70 символов.
     """
-    return f'ToyHUB: vash kod {code}. Nikomu ne soobshchaite.'
+    return f'ToiApp: vash kod {code}. Nikomu ne soobshchaite.'
 
 
 async def send_otp(phone: str, code: str) -> None:

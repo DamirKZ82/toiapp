@@ -50,7 +50,7 @@ export default function ReviewFormScreen({ route, navigation }: Props) {
   };
 
   return (
-    <Screen>
+    <Screen scroll>
       <Text style={styles.title}>{t('review_form.title')}</Text>
       <Text style={styles.hallName}>{hallName}</Text>
 

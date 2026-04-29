@@ -3,6 +3,7 @@ import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { radii, spacing } from '@/theme';
 import { useThemeColors } from '@/theme/useThemeColors';
+import { useSafeBottomInset } from '@/utils/useSafeBottomInset';
 
 interface Props {
   visible: boolean;
@@ -12,13 +13,30 @@ interface Props {
 
 export function BottomModal({ visible, onClose, children }: Props) {
   const colors = useThemeColors();
+  const safeBottom = useSafeBottomInset();
+  const bottomPadding = spacing.lg + safeBottom;
+
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+      statusBarTranslucent
+      navigationBarTranslucent={false}
+    >
       <Pressable
         style={[styles.backdrop, { backgroundColor: colors.backdrop }]}
         onPress={onClose}
       />
-      <View style={[styles.sheet, { backgroundColor: colors.surface }]}>{children}</View>
+      <View
+        style={[
+          styles.sheet,
+          { backgroundColor: colors.surface, paddingBottom: bottomPadding },
+        ]}
+      >
+        {children}
+      </View>
     </Modal>
   );
 }
@@ -29,7 +47,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: radii.lg,
     borderTopRightRadius: radii.lg,
     padding: spacing.md,
-    paddingBottom: spacing.lg,
     maxHeight: '85%',
   },
 });

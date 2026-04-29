@@ -5,6 +5,7 @@ import { Button, TextInput } from 'react-native-paper';
 import { BottomModal } from './BottomModal';
 import { spacing } from '@/theme';
 import { useStyles } from '@/theme/useStyles';
+import { KEYBOARD_TOOLBAR_ID } from '@/components/KeyboardToolbar';
 
 interface Props {
   visible: boolean;
@@ -48,6 +49,7 @@ export function GuestsPicker({ visible, value, onChange, onClose, min, max }: Pr
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
+        inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
         value={raw}
         onChangeText={(t) => setRaw(t.replace(/\D/g, '').slice(0, 5))}
         placeholder="150"

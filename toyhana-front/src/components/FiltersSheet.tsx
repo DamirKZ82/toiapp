@@ -8,6 +8,7 @@ import { useStyles } from '@/theme/useStyles';
 import { dictName } from '@/utils/i18nDict';
 import { useAuthStore } from '@/store/authStore';
 import type { Amenity } from '@/api/types';
+import { KEYBOARD_TOOLBAR_ID } from '@/components/KeyboardToolbar';
 
 export type SortOption = 'rating_desc' | 'price_asc' | 'price_desc';
 
@@ -90,6 +91,7 @@ export function FiltersSheet({ visible, onClose, value, onApply, amenities }: Pr
         <TextInput
           mode="outlined"
           keyboardType="number-pad"
+          inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
           value={priceMax}
           onChangeText={(t) => setPriceMax(t.replace(/\D/g, '').slice(0, 10))}
           placeholder="500000"

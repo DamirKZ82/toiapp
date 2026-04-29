@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title='ToyHUB API',
+    title='ToiApp API',
     version='0.1.0',
     lifespan=lifespan,
 )

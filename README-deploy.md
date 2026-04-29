@@ -58,7 +58,7 @@ sudo ufw enable
 
 ```bash
 cd /opt
-sudo git clone https://github.com/DamirKZ82/toyhub.git toyhana
+sudo git clone https://github.com/DamirKZ82/toiapp.git toyhana
 sudo chown -R $USER:$USER toyhana
 cd toyhana
 ```

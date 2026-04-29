@@ -18,6 +18,7 @@ import { useStyles } from '@/theme/useStyles';
 import { useThemeColors } from '@/theme/useThemeColors';
 import type { ProfileStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { KEYBOARD_TOOLBAR_ID } from '@/components/KeyboardToolbar';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'VenueForm'>;
 
@@ -199,6 +200,7 @@ export default function VenueFormScreen({ route, navigation }: Props) {
         onChangeText={setPhone}
         placeholder={t('owner.venue_phone_placeholder')}
         keyboardType="phone-pad"
+        inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
         style={styles.input}
       />
 

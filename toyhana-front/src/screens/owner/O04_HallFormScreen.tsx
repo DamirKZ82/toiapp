@@ -20,6 +20,7 @@ import { useStyles } from '@/theme/useStyles';
 import { useThemeColors } from '@/theme/useThemeColors';
 import type { ProfileStackParamList } from '@/navigation/types';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { KEYBOARD_TOOLBAR_ID } from '@/components/KeyboardToolbar';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'HallForm'>;
 
@@ -277,6 +278,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
+        inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
         value={areaSqm}
         onChangeText={(v) => setAreaSqm(v.replace(/\D/g, '').slice(0, 5))}
         style={styles.input}
@@ -287,6 +289,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
         <TextInput
           mode="outlined"
           keyboardType="number-pad"
+          inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
           value={capMin}
           onChangeText={(v) => setCapMin(v.replace(/\D/g, '').slice(0, 5))}
           placeholder={t('owner.capacity_min_placeholder')}
@@ -295,6 +298,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
         <TextInput
           mode="outlined"
           keyboardType="number-pad"
+          inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
           value={capMax}
           onChangeText={(v) => setCapMax(v.replace(/\D/g, '').slice(0, 5))}
           placeholder={t('owner.capacity_max_placeholder')}
@@ -306,6 +310,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
+        inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
         value={priceWeekday}
         onChangeText={(v) => setPriceWeekday(v.replace(/\D/g, '').slice(0, 10))}
         placeholder="200000"
@@ -316,6 +321,7 @@ export default function HallFormScreen({ route, navigation }: Props) {
       <TextInput
         mode="outlined"
         keyboardType="number-pad"
+        inputAccessoryViewID={KEYBOARD_TOOLBAR_ID}
         value={priceWeekend}
         onChangeText={(v) => setPriceWeekend(v.replace(/\D/g, '').slice(0, 10))}
         placeholder="400000"

@@ -11,6 +11,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { AuthGateSheet } from '@/components/AuthGateSheet';
+import { KeyboardToolbar } from '@/components/KeyboardToolbar';
 import { useAuthStore } from '@/store/authStore';
 import { useFavoritesStore } from '@/store/favoritesStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -74,6 +75,7 @@ export default function App() {
           <StatusBar style={isDark ? 'light' : 'dark'} />
           <RootNavigator />
           <AuthGateSheet />
+          <KeyboardToolbar />
         </NavigationContainer>
       </PaperProvider>
     </SafeAreaProvider>
