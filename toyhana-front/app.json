@@ -54,7 +54,7 @@
       ]
     ],
     "extra": {
-      "apiBaseUrl": "http://10.0.2.2:4000",
+      "apiBaseUrl": "http://api.toiapp.kz",
       "eas": {
         "projectId": "0ae21cc4-5fc4-4465-adf3-171d9f95268d"
       }
